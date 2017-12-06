@@ -104,10 +104,9 @@ class FileUploader
      * @param string $storage
      * @return string uploaded file's path
      */
-
     public function replaceAs($oldFilePath, $newFilename, $path = '', $storage = 'public')
     {
-        $this->delete($oldFilePath, $storage);
+        self::delete($oldFilePath, $storage);
 
         return $this->uploadAs($newFilename, $path, $storage);
     }
@@ -142,9 +141,9 @@ class FileUploader
      * @param string $storage
      * @return void
      */
-    protected function delete($filePath, $storage = 'public')
+    public static function delete($filePath, $storage = 'public')
     {
-        if ($filePath && Storage::disk($storage)->exists($filePath)) {
+        if (Storage::disk($storage)->exists($filePath)) {
             Storage::disk($storage)->delete($filePath);
         }
     }
