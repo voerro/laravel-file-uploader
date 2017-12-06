@@ -49,6 +49,7 @@ class FileUploader
      * Uploads a file under a hashname
      *
      * @param string $path path to upload to
+     * @param string $storage
      * @return string uploaded file's path
      */
     public function upload($path = '', $storage = 'public')
@@ -59,7 +60,9 @@ class FileUploader
     /**
      * Uploads a file under a speciifed name
      *
+     * @param string $filename filename to upload the file under
      * @param string $path path to upload to
+     * @param string $storage
      * @return string uploaded file's path
      */
     public function uploadAs($filename, $path = '', $storage = 'public')
@@ -77,6 +80,36 @@ class FileUploader
         } else {
             return $this->file->storeAs($path, $filename, $storage);
         }
+    }
+
+    /**
+     * Replace an old file with a new one
+     *
+     * @param string $oldFilePath path of the file to replace
+     * @param string $path path to upload the new file to
+     * @param string $storage
+     * @return string uploaded file's path
+     */
+    public function replace($oldFilePath, $path = '', $storage = 'public')
+    {
+        return $this->replaceAs($oldFilePath, '', $path, $storage);
+    }
+
+    /**
+     * Replace an old file with a new one and store it under a specified name
+     *
+     * @param string $oldFilePath path of the file to be replaced
+     * @param string $newFilename filename to upload the new file under
+     * @param string $path path to upload the new file to
+     * @param string $storage
+     * @return string uploaded file's path
+     */
+
+    public function replaceAs($oldFilePath, $newFilename, $path = '', $storage = 'public')
+    {
+        $this->delete($oldFilePath, $storage);
+
+        return $this->uploadAs($newFilename, $path, $storage);
     }
 
     /**
@@ -100,5 +133,19 @@ class FileUploader
         }
 
         return $this;
+    }
+
+    /**
+     * Delete a file from the specified storage
+     *
+     * @param string $filePath relative path to the file to delete
+     * @param string $storage
+     * @return void
+     */
+    protected function delete($filePath, $storage = 'public')
+    {
+        if ($filePath && Storage::disk($storage)->exists($filePath)) {
+            Storage::disk($storage)->delete($filePath);
+        }
     }
 }

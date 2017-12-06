@@ -9,10 +9,6 @@ use Intervention\Image\ImageManagerStatic as Image;
 
 class FileUploaderTest extends TestCase
 {
-    // TODO;
-    // replace file
-    // replace file as
-
     public function testItUploadsFiles()
     {
         Storage::fake('public');
@@ -56,5 +52,44 @@ class FileUploaderTest extends TestCase
         $uploaded = Image::make(Storage::disk('public')->get($path));
         $this->assertLessThanOrEqual(200, $uploaded->width());
         $this->assertLessThanOrEqual(200, $uploaded->height());
+    }
+
+    public function testItReplacesTheOldFileWithTheNewFile()
+    {
+        Storage::fake('public');
+
+        $oldFile = UploadedFile::fake()->create('file.pdf', 100);
+
+        $oldPath = FileUploader::make($oldFile)->upload();
+
+        Storage::disk('public')->assertExists($oldPath);
+
+        $newFile = UploadedFile::fake()->create('new_file.pdf', 100);
+
+        $newPath = FileUploader::make($newFile)->replace($oldPath);
+
+        Storage::disk('public')->assertMissing($oldPath);
+        Storage::disk('public')->assertExists($newPath);
+    }
+
+    public function testItReplacesTheOldFileWithTheNewFileUnderSpecifiedName()
+    {
+        Storage::fake('public');
+
+        $oldFile = UploadedFile::fake()->create('file.pdf', 100);
+
+        $oldPath = FileUploader::make($oldFile)->upload();
+
+        Storage::disk('public')->assertExists($oldPath);
+
+        $newFile = UploadedFile::fake()->create('new_file.pdf', 100);
+
+        $newFilename = 'new_document';
+        $newPath = FileUploader::make($newFile)->replaceAs($oldPath, $newFilename);
+
+        Storage::disk('public')->assertMissing($oldPath);
+
+        $this->assertEquals("{$newFilename}.pdf", $newPath);
+        Storage::disk('public')->assertExists($newPath);
     }
 }
