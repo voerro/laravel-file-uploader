@@ -4,6 +4,7 @@ A very simple helper class that makes these tasks a walk in the park:
 - replacing an old/existing file with a new one
 - downsizing an image on upload
 - deleting a file from a storage
+- determining if a file is an image
 
 ## Installation
 
@@ -55,13 +56,19 @@ Deleting a file (the method checks if the file exists to eliminate possible erro
 ::delete(string $filePath, string $storage = 'public')
 ```
 
+Determine if a file is an image. Pass to the method an UploadedFile instance or a string with a path to the file:
+
+```php
+::isImage($file, $storage = 'public')
+```
+
 #### The following methods should be chained after the `make` method.
 
 ```php
 ->upload(string $path = '', string $storage = 'public')
 ```
 
-Upload under a specified name:
+Upload file under a specified name:
 
 ```php
 ->uploadAs(string $filename, string $path = '', string $storage = 'public')
@@ -79,7 +86,7 @@ Replace an old file, store the new file under a specified name:
 ->replaceAs(string $oldFilePath, string $newFilename, string $path = '', string $storage = 'public')
 ```
 
-Downsize an image if it's bigger than the specified width and/or height (the aspect ratio will be saved):
+Downsize an image if it's bigger than the specified width and/or height (the aspect ratio will be saved). When called on a non-image file nothing would be happen, thus you don't need to manually check if the file is an image before deciding wether to call this method.
 
 ```php
 ->downsize(integer $maxWidth, integer $maxHeight)

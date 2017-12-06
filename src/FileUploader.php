@@ -4,6 +4,7 @@ namespace Voerro\FileUploader;
 
 use Intervention\Image\ImageManagerStatic as Image;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\UploadedFile;
 
 class FileUploader
 {
@@ -20,6 +21,61 @@ class FileUploader
      * @var Intervention\Image\Facades\Image
      */
     protected $image;
+
+    /**
+     * $imageMimes full list of image mime types
+     *
+     * @var array
+     */
+    protected static $imageMimes = [
+        'image/bmp',
+        'image/cmu-raster',
+        'image/fif',
+        'image/florian',
+        'image/g3fax',
+        'image/gif',
+        'image/ief',
+        'image/jpeg',
+        'image/jutvision',
+        'image/naplps',
+        'image/pict',
+        'image/pjpeg',
+        'image/png',
+        'image/svg+xml',
+        'image/tiff',
+        'image/vasa',
+        'image/vnd.dwg',
+        'image/vnd.fpx',
+        'image/vnd.net-fpx',
+        'image/vnd.rn-realflash',
+        'image/vnd.rn-realpix',
+        'image/vnd.wap.wbmp',
+        'image/vnd.xiff',
+        'image/webp',
+        'image/x-cmu-raster',
+        'image/x-dwg',
+        'image/x-icon',
+        'image/x-jg',
+        'image/x-jps',
+        'image/x-niff',
+        'image/x-pcx',
+        'image/x-pict',
+        'image/x-portable-anymap',
+        'image/x-portable-bitmap',
+        'image/x-portable-graymap',
+        'image/x-portable-pixmap',
+        'image/x-quicktime',
+        'image/x-rgb',
+        'image/x-tiff',
+        'image/x-windows-bmp',
+        'image/x-xbitmap',
+        'image/x-xbm',
+        'image/x-xpixmap',
+        'image/x-xwd',
+        'image/x-xwindowdump',
+        'image/xbm',
+        'image/xpm',
+    ];
 
     /**
      * Custom constructor
@@ -120,15 +176,17 @@ class FileUploader
      */
     public function downsize($maxWidth, $maxHeight)
     {
-        $image = Image::make($this->file);
+        if (self::isImage($this->file)) {
+            $image = Image::make($this->file);
 
-        // Downsize the image if it's bigger than desired
-        if ($image->width() > $maxWidth || $image->height() > $maxHeight) {
-            $image->resize($maxWidth, $maxHeight, function ($constraint) {
-                $constraint->aspectRatio();
-            });
+            // Downsize the image if it's bigger than desired
+            if ($image->width() > $maxWidth || $image->height() > $maxHeight) {
+                $image->resize($maxWidth, $maxHeight, function ($constraint) {
+                    $constraint->aspectRatio();
+                });
 
-            $this->image = $image;
+                $this->image = $image;
+            }
         }
 
         return $this;
@@ -145,6 +203,29 @@ class FileUploader
     {
         if (Storage::disk($storage)->exists($filePath)) {
             Storage::disk($storage)->delete($filePath);
+        }
+    }
+
+    /**
+     * Determine if a file is an image base on its MIME type
+     *
+     * @param string $file a path to a file or an UploadedFile instance
+     * @param string $storage
+     * @return boolean
+     */
+    public static function isImage($file, $storage = 'public')
+    {
+        if (is_string($file)) {
+            if (Storage::disk($storage)->exists($file)) {
+                return in_array(
+                    Storage::disk($storage)->mimeType($file),
+                    FileUploader::$imageMimes
+                );
+            } else {
+                return false;
+            }
+        } else {
+            return in_array($file->getMimeType(), FileUploader::$imageMimes);
         }
     }
 }
