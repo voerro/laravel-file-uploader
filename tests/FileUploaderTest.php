@@ -92,4 +92,30 @@ class FileUploaderTest extends TestCase
         $this->assertEquals("{$newFilename}.pdf", $newPath);
         Storage::disk('public')->assertExists($newPath);
     }
+
+    public function testItCanDetermineIfFileIsImage()
+    {
+        $file = UploadedFile::fake()->create('file.pdf', 100);
+        $image = UploadedFile::fake()->image('iamge.jpg', 100, 100);
+
+        $this->assertTrue(FileUploader::isImage($image));
+        $this->assertFalse(FileUploader::isImage($file));
+
+        $filePath = FileUploader::make($file)->upload();
+        $imagePath = FileUploader::make($image)->upload();
+
+        $this->assertTrue(FileUploader::isImage($imagePath));
+        $this->assertFalse(FileUploader::isImage($filePath));
+    }
+
+    public function testNothingBreaksWhenItPerformDownsizeOnNonImage()
+    {
+        Storage::fake('public');
+
+        $file = UploadedFile::fake()->create('file.pdf', 100);
+
+        $path = FileUploader::make($file)->downsize(50, 50)->upload();
+
+        Storage::disk('public')->assertExists($path);
+    }
 }
