@@ -8,6 +8,6 @@ class FileUploaderFacade extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'file-uploader';
+        return 'laravel-file-uploader';
     }
 }

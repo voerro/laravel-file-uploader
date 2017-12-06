@@ -17,6 +17,6 @@ class FileUploaderServiceProvider extends ServiceProvider
             return new FileUploader();
         });
 
-        $this->app->alias(FileUploader::class, 'file-uploader');
+        $this->app->alias(FileUploader::class, 'laravel-file-uploader');
     }
 }

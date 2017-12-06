@@ -1,5 +1,5 @@
 {
-    "name": "voerro/file-uploader",
+    "name": "voerro/laravel-file-uploader",
     "description": "A small helper class for easier file and image uploading in Laravel",
     "type": "library",
     "license": "MIT",
