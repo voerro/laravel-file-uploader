@@ -5,11 +5,11 @@ namespace Voerro\FileUploader\Test;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\UploadedFile;
 use Voerro\FileUploader\FileUploader;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class FileUploaderTest extends TestCase
 {
     // TODO;
-    // downsizing an image before uploading
     // replace file
     // replace file as
 
@@ -23,9 +23,10 @@ class FileUploaderTest extends TestCase
 
         Storage::disk('public')->assertExists($file->hashName());
 
-        FileUploader::make($file)->upload('documents/');
+        $path = FileUploader::make($file)->upload('documents');
 
-        Storage::disk('public')->assertExists('documents/' . $file->hashName());
+        $this->assertEquals('documents/' . $file->hashName(), $path);
+        Storage::disk('public')->assertExists($path);
     }
 
     public function testItUploadsFilesUnderSpecifiedNames()
@@ -36,8 +37,24 @@ class FileUploaderTest extends TestCase
 
         $filename = 'document';
 
-        FileUploader::make($file)->uploadAs($filename);
+        $path = FileUploader::make($file)->uploadAs($filename);
 
-        Storage::disk('public')->assertExists("{$filename}.pdf");
+        $this->assertEquals("{$filename}.pdf", $path);
+        Storage::disk('public')->assertExists($path);
+    }
+
+    public function testItDownsizesImageBeforeUploading()
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('image.jpg', 640, 480);
+
+        $path = FileUploader::make($image)->downsize(200, 200)->upload();
+
+        Storage::disk('public')->assertExists($path);
+
+        $uploaded = Image::make(Storage::disk('public')->get($path));
+        $this->assertLessThanOrEqual(200, $uploaded->width());
+        $this->assertLessThanOrEqual(200, $uploaded->height());
     }
 }

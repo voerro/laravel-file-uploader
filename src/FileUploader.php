@@ -2,6 +2,9 @@
 
 namespace Voerro\FileUploader;
 
+use Intervention\Image\ImageManagerStatic as Image;
+use Illuminate\Support\Facades\Storage;
+
 class FileUploader
 {
     /**
@@ -65,6 +68,37 @@ class FileUploader
             ? $filename . '.' . $this->file->getClientOriginalExtension()
             : $this->file->hashName();
 
-        return $this->file->storeAs($path, $filename, $storage);
+        if ($this->image) {
+            $imagePath = $path . $filename;
+
+            $this->image->save(Storage::disk($storage)->path($imagePath));
+
+            return $imagePath;
+        } else {
+            return $this->file->storeAs($path, $filename, $storage);
+        }
+    }
+
+    /**
+     * Downsize an image if it's bigger than the dimensions provided
+     *
+     * @param integer $maxWidth maximum allowed width
+     * @param integer $maxHeight maximum allowed height
+     * @return Voerro\FileUploader\FileUploader $this
+     */
+    public function downsize($maxWidth, $maxHeight)
+    {
+        $image = Image::make($this->file);
+
+        // Downsize the image if it's bigger than desired
+        if ($image->width() > $maxWidth || $image->height() > $maxHeight) {
+            $image->resize($maxWidth, $maxHeight, function ($constraint) {
+                $constraint->aspectRatio();
+            });
+
+            $this->image = $image;
+        }
+
+        return $this;
     }
 }
