@@ -95,5 +95,5 @@ Downsize an image if it's bigger than the specified width and/or height (the asp
 Call this method before calling any of the above methods, for example:
 
 ```php
-FileUploader::make($image)->downsize(200, 200)->replace();
+FileUploader::make($image)->downsize(200, 200)->replace('old_image_file.jpg');
 ```
