@@ -31,11 +31,11 @@ class FileUploaderTest extends TestCase
 
         $file = UploadedFile::fake()->create('file.pdf', 100);
 
-        $filename = 'document';
+        $filename = 'document.pdf';
 
         $path = FileUploader::make($file)->uploadAs($filename);
 
-        $this->assertEquals("{$filename}.pdf", $path);
+        $this->assertEquals($filename, $path);
         Storage::disk('public')->assertExists($path);
     }
 
@@ -84,12 +84,12 @@ class FileUploaderTest extends TestCase
 
         $newFile = UploadedFile::fake()->create('new_file.pdf', 100);
 
-        $newFilename = 'new_document';
+        $newFilename = 'new_document.pdf';
         $newPath = FileUploader::make($newFile)->replaceAs($oldPath, $newFilename);
 
         Storage::disk('public')->assertMissing($oldPath);
 
-        $this->assertEquals("{$newFilename}.pdf", $newPath);
+        $this->assertEquals($newFilename, $newPath);
         Storage::disk('public')->assertExists($newPath);
     }
 

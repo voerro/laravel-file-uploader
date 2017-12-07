@@ -123,12 +123,14 @@ class FileUploader
      */
     public function uploadAs($filename, $path = '', $storage = 'public')
     {
-        $filename = $filename
-            ? $filename . '.' . $this->file->getClientOriginalExtension()
-            : $this->file->hashName();
+        $filename = $filename ?: $this->file->hashName();
 
         if ($this->image) {
-            $imagePath = $path . $filename;
+            $imagePath = "{$path}/{$filename}";
+
+            if (!Storage::disk($storage)->exists($path)) {
+                Storage::disk($storage)->makeDirectory($path);
+            }
 
             $this->image->save(Storage::disk($storage)->path($imagePath));
 
