@@ -1,5 +1,7 @@
 # Laravel File Uploader
 
+[![Packagist](https://img.shields.io/packagist/dt/voerro/laravel-file-uploader.svg?style=flat-square)]() [![Packagist](https://img.shields.io/packagist/l/voerro/laravel-file-uploader.svg?style=flat-square)]()
+
 A very simple helper class that makes these tasks a walk in the park:
 - replacing an old/existing file with a new one
 - downsizing an image on upload
