@@ -35,9 +35,7 @@ Import the `FileUploader` class like this:
 ```php
 use Voerro\FileUploader\FileUploader;
 ```
-## License
 
-This is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 Pass the uploaded file (an `Illuminate\Http\UploadedFile`) instance to the `make` method, then chain the `upload` method, which will return the path to the newly stored file.
 
 ```php
@@ -101,3 +99,7 @@ Call this method before calling any of the above methods, for example:
 ```php
 FileUploader::make($image)->downsize(200, 200)->replace('old_image_file.jpg');
 ```
+
+## License
+
+This is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
