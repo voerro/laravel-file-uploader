@@ -35,7 +35,9 @@ Import the `FileUploader` class like this:
 ```php
 use Voerro\FileUploader\FileUploader;
 ```
+## License
 
+This is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 Pass the uploaded file (an `Illuminate\Http\UploadedFile`) instance to the `make` method, then chain the `upload` method, which will return the path to the newly stored file.
 
 ```php
