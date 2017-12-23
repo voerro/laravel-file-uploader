@@ -12,7 +12,9 @@ A very simple helper class that makes these tasks a walk in the park:
 
 Via composer:
 
-`composer require voerro/laravel-file-uploader`
+```
+composer require voerro/laravel-file-uploader
+```
 
 #### For Laravel Below 5.5
 
