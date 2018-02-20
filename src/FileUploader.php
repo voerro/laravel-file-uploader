@@ -102,6 +102,23 @@ class FileUploader
     }
 
     /**
+     * Create new or return an existing Intervention Image object based on
+     * $this->file
+     *
+     * @return Image
+     */
+    protected function getImage()
+    {
+        if (!$this->image) {
+            if (self::isImage($this->file)) {
+                return Image::make($this->file);
+            }
+        }
+
+        return $this->image;
+    }
+
+    /**
      * Uploads a file under a hashname
      *
      * @param string $path path to upload to
@@ -178,17 +195,35 @@ class FileUploader
      */
     public function downsize($maxWidth, $maxHeight)
     {
-        if (self::isImage($this->file)) {
-            $image = Image::make($this->file);
-
+        if ($this->image = $this->getImage()) {
             // Downsize the image if it's bigger than desired
-            if ($image->width() > $maxWidth || $image->height() > $maxHeight) {
-                $image->resize($maxWidth, $maxHeight, function ($constraint) {
+            if ($this->image->width() > $maxWidth || $this->image->height() > $maxHeight) {
+                $this->image->resize($maxWidth, $maxHeight, function ($constraint) {
                     $constraint->aspectRatio();
                 });
-
-                $this->image = $image;
             }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Crop and resize an image to fit the the specified dimensions
+     *
+     * @param integer $width
+     * @param integer $height
+     * @param boolean $dontUpsize don't upsize the image if it's smaller than
+     * the provided width and height
+     * @return void
+     */
+    public function fit($width, $height, $dontUpsize = false)
+    {
+        if ($this->image = $this->getImage()) {
+            $this->image->fit($width, $height, function ($constraint) use ($dontUpsize) {
+                if ($dontUpsize) {
+                    $constraint->upsize();
+                }
+            });
         }
 
         return $this;

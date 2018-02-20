@@ -96,6 +96,12 @@ Downsize an image if it's bigger than the specified width and/or height (the asp
 ->downsize(integer $maxWidth, integer $maxHeight)
 ```
 
+Crop and resize an image to fit the the specified dimensions (the same as `->fit()` from Intervention Image)
+
+```php
+->fit(integer $width, integer $height, boolean $dontUpsize = false)
+```
+
 Call this method before calling any of the above methods, for example:
 
 ```php

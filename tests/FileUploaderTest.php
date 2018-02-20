@@ -54,6 +54,36 @@ class FileUploaderTest extends TestCase
         $this->assertLessThanOrEqual(200, $uploaded->height());
     }
 
+    public function testItDownsizesAndCropsImageBeforeUploading()
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('image.jpg', 640, 480);
+
+        $path = FileUploader::make($image)->fit(640, 640)->upload();
+
+        Storage::disk('public')->assertExists($path);
+
+        $uploaded = Image::make(Storage::disk('public')->get($path));
+        $this->assertEquals(640, $uploaded->width());
+        $this->assertEquals(640, $uploaded->height());
+    }
+
+    public function testItDownsizesAndCropsImageBeforeUploadingWithoutUpscaling()
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('image.jpg', 640, 480);
+
+        $path = FileUploader::make($image)->fit(640, 640, true)->upload();
+
+        Storage::disk('public')->assertExists($path);
+
+        $uploaded = Image::make(Storage::disk('public')->get($path));
+        $this->assertEquals(480, $uploaded->width());
+        $this->assertEquals(480, $uploaded->height());
+    }
+
     public function testItReplacesTheOldFileWithTheNewFile()
     {
         Storage::fake('public');
